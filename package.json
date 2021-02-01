@@ -1,0 +1,24 @@
+{
+  "name": "matcha-ecole42-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "node ./db/createDB.js; node ./index.js;",
+    "dev": "supervisor ./index.js;",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "8.4.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.11.14",
+    "socket.io": "^3.1.0",
+    "supervisor": "^0.12.0"
+  },
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC"
+}
