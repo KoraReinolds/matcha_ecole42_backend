@@ -24,13 +24,14 @@ module.exports = function(io) {
     geoLoc: { // геолокация по которой ведутся расчеты дистанции, равна выбранной или реальной, если выбранная отсутствует
       type: pointSchema,
       index: '2dsphere',
+      // type: { type: String, enum: ["Point"] },
+      // coordinates: { type: [Number] },
     },
     realLocation: { // реальная геолокация пользователя, обновляется при логине
       type: Object,
     },
     location: { // выбранная пользователем геолокация, обновляется при изменении профиля
       type: Object,
-      // get: getLocation,
     },
     login: {
       type: String,
@@ -77,7 +78,7 @@ module.exports = function(io) {
       type: String,
     },
     preference: {
-      type: String,
+      type: Array,
     },
     images: {
       type: Object,
@@ -89,6 +90,8 @@ module.exports = function(io) {
       type: Boolean,
     },
   })
+
+  // schema.index({ 'geoLoc': '2dsphere' });
   // }, { toJSON: { getters: true } })
   
   schema.statics.getUsersForChat = async function(req, callback) {
@@ -139,6 +142,10 @@ module.exports = function(io) {
   schema.methods.encryptPassword = function(password) {
     return crypto.createHmac('sha1', this.salt).update(password).digest('hex')
   }
+
+  // schema.index({
+  //   ge: "2dsphere",
+  // })
 
   const User = mongo.model('User', schema)
 

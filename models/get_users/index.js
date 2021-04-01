@@ -1,36 +1,40 @@
+const { sort } = require('../../dataGeneration/sentences')
 const mongo = require('../../db/mongo')
 
 module.exports = async function({
   user,
   query: {
-    needPreference: pref,
+    pref,
     ageMin,
     ageMax,
-    deltaRadius,
+    radius,
     minRating,
     maxRating,
     tags,
-    sortLocation,
-    sortAge,
-    sortRating,
-    sortTags,
     limit,
-    offset,
+    skip,
+    sort,
   }
 }) {
-  // const users = await this.find()
+
   let docs = await this.aggregate([
     {
       $geoNear: {
         near: {
           type: "Point",
-          // coordinates: [ 55.751640, 37.616565 ],
-          // coordinates: [ 37.616565, 55.751640 ],
           coordinates: user.geoLoc.coordinates,
         },
-        distanceField: "calculated",
-        maxDistance: 25000000,
+        distanceField: "distance",
+        maxDistance: +radius * 1000,
+        spherical: true,
       }
+    },
+    {
+      $addFields: {
+        dist: {
+          $round: [{ $divide: ["$distance", 1000] }, 0]
+        }
+      },
     },
     {
       $addFields: { "likedTo": false },
@@ -42,17 +46,55 @@ module.exports = async function({
       $match: {
         isFilled: true,
         login: { $ne: user.login },
-        // gender: +pref,
-        // age: { $gt: +ageMin - 1, $lt: +ageMax + 1 },
-        // rating: { $gt: +minRating - 1, $lt: +maxRating + 1 },
+        gender: { $in: pref || [] },
+        age: { $gt: +ageMin - 1, $lt: +ageMax + 1 },
+        rating: { $gt: +minRating - 1, $lt: +maxRating + 1 },
+        ...(
+          tags ? { tags: { $in: tags || [] } } : {}
+        ),
       }
     },
     {
-      $skip: +offset,
+      $addFields: {
+        tagsMatch: {
+          $map: {
+            input: "$tags",
+            as: "tag",
+            in: {
+              $cond: {
+                if: {
+                  $in: [ "$$tag", tags ]
+                },
+                then: 1,
+                else: 0
+              }
+            }
+          }
+        }
+      }
     },
     {
-      $limit: +limit,
+      $addFields: {
+        tagsCount: {
+          $reduce: {
+            input: "$tagsMatch",
+            initialValue: 0,
+            in: {
+              $add : ["$$value", "$$this"],
+            }
+          }
+        },
+      }
     },
+    {
+      $sort: { ...JSON.parse(sort), empty: 1 }
+    },
+    {
+      $skip: +skip
+    },
+    {
+      $limit: +limit
+    }
   ])
 
   docs = await Promise.all(docs.map(async userInQuery => {
@@ -61,35 +103,5 @@ module.exports = async function({
     return userInQuery
   }))
 
-    // .select('-_id -salt -token -hashedPassword -__v -email -created')
-  // let filteredDocs = docs
-
-
-  // if (options.tags.length) {
-  //   filteredDocs = filteredDocs.filter(
-  //     (user) => options.tags.some((tag) => user.tags.includes(tag))
-  //   )
-  // }
-  // filteredDocs.forEach((user) => {
-  //   user.sortTags = user.tags.reduce((sum, tag) => {
-  //     return sum += +options.tags.includes(tag)
-  //   }, 0)
-  // })
-  // const sortFields = Object.keys(options.sortOrder)
-  // const sortLen = sortFields.length
-  // let i = 0
-  // const compare = function(a, b, i) {
-  //   const field = sortFields[i]
-  //   return (i === sortLen)
-  //     ? 0 : (
-  //       options.sortOrder[field] * (a[field] - b[field]) ||
-  //       compare(a, b, i + 1)
-  //     )
-  // }
-  // filteredDocs = filteredDocs.sort((a, b) => compare(a, b, 0))
-  // let res = {
-  //   users: filteredDocs.slice(options.skip, options.skip + options.limit),
-  //   length: filteredDocs.length,
-  // }
   return { type: "ok", data: docs }
 }

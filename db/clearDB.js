@@ -1,10 +1,7 @@
 const mongo = require('./mongo')
 
-try {
-  mongo.connection.on("open", () => {
-    let db = mongo.connection.db
-    db.dropDatabase()
+mongo.connection.on("open", () => {
+  mongo.connection.db.dropDatabase(() => {
+    mongo.disconnect()
   })
-} finally {
-  mongo.disconnect()
-}
+})

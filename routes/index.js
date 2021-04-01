@@ -15,6 +15,7 @@ module.exports = function(io) {
   router.use(errorHandleWrapper(async (req, res, next) => {
     let token = req.headers.authorization
     req.user = await User.findOne({token})
+    // console.log(req.user, token)
     next()
   }))
   

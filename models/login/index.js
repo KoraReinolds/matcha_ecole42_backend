@@ -1,17 +1,16 @@
-module.exports = async function(body) {
+module.exports = async function({ login, location, password }) {
   
   const crypto = require('crypto')
-  const User = this
-  const user = await User.findOne({ login: body.login })
+  const user = await this.findOne({ login })
 
-  if (!user || !user.checkPassword(body.password)) {
+  if (!user || !user.checkPassword(password)) {
     return { type: "error", message: "Неверное имя пользователя или пароль" }
   }
 
   const buffer = await crypto.randomBytes(48)
-  user.realLocation = body.location
+  user.realLocation = location
   if (!user.location) { // если ползователь не менял геолокацию
-    user.geoLoc.coordinates = [body.location.y, body.location.x]
+    user.geoLoc.coordinates = [location.y, location.x]
   }
   user.token = buffer.toString('hex')
   await user.save()
