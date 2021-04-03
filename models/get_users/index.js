@@ -10,7 +10,7 @@ module.exports = async function({
     radius,
     minRating,
     maxRating,
-    tags,
+    tags=[],
     limit,
     skip,
     sort,
@@ -49,9 +49,7 @@ module.exports = async function({
         gender: { $in: pref || [] },
         age: { $gt: +ageMin - 1, $lt: +ageMax + 1 },
         rating: { $gt: +minRating - 1, $lt: +maxRating + 1 },
-        ...(
-          tags ? { tags: { $in: tags || [] } } : {}
-        ),
+        tags: tags.length ? { $in: tags } : { $nin: tags }
       }
     },
     {
