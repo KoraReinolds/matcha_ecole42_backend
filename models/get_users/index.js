@@ -37,12 +37,6 @@ module.exports = async function({
       },
     },
     {
-      $addFields: { "likedTo": false },
-    },
-    {
-      $addFields: { "likedFrom": false },
-    },
-    {
       $match: {
         isFilled: true,
         login: { $ne: user.login },
@@ -92,14 +86,14 @@ module.exports = async function({
     },
     {
       $limit: +limit
-    }
+    },
+    {
+      $addFields: { likedTo: { $in: [user.login, "$likeList"] } },
+    },
+    {
+      $addFields: { likedFrom: { $in: ["$login", user.likeList] } },
+    },
   ])
-
-  docs = await Promise.all(docs.map(async userInQuery => {
-    userInQuery.likedTo = await mongo.models.Actions.checkIfUserLikeMe(user, userInQuery)
-    userInQuery.likedFrom = await mongo.models.Actions.checkIfILikeUser(user, userInQuery)
-    return userInQuery
-  }))
 
   return { type: "ok", data: docs }
 }

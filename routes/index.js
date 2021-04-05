@@ -55,14 +55,9 @@ module.exports = function(io) {
     } else next()
   })
   
-  router.post('/chat-list', (req, res, next) => {
-    if (req.user) {
-      User.getUsersForChat(req, (err, params) => {
-        if (err) next(err)
-        else res.send(JSON.stringify(params))
-      })
-    } else next()
-  })
+  router.get('/chat-list', errorHandleWrapper(async (req, res) => {
+    res.json(await User.getChatList(req))
+  }))
 
   router.post('/history', errorHandleWrapper(async (req, res) => {
     res.json(await Actions.getHistory(req))

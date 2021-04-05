@@ -26,40 +26,6 @@ module.exports = function(io) {
     },
   })
 
-  schema.statics.checkIfUserLikeMe = async function(curUser, targetUser) {
-
-    const likeAction = await mongo.models.Actions.findOne(
-      {
-        who: targetUser._id,
-        target: curUser._id,
-        $or: [
-          { action: 'dislike' },
-          { action: 'like' },
-        ],
-      },
-      {},
-      { sort: { 'created' : -1 } }
-    )
-    return likeAction ? likeAction.action === "like" : false
-  }
-
-  schema.statics.checkIfILikeUser = async function(curUser, targetUser) {
-
-    const likeAction = await mongo.models.Actions.findOne(
-      {
-        target: targetUser._id,
-        who: curUser._id,
-        $or: [
-          { action: 'dislike' },
-          { action: 'like' },
-        ],
-      },
-      {},
-      { sort: { 'created' : -1 } }
-    )
-    return likeAction ? likeAction.action === "like" : false
-  }
-
   schema.statics.likeUser = require('./like_user')
   
   schema.statics.sendMessage = function(req, callback) {

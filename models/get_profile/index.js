@@ -7,13 +7,13 @@ module.exports = async function(req) {
   const user = (await User
     .aggregate([
       {
-        $addFields: { "likedTo": false },
+        $match: { login }
       },
       {
-        $addFields: { "likedFrom": false },
+        $addFields: { likedTo: { $in: [req.user.login, "$likeList"] } },
       },
       {
-        $match: { login, }
+        $addFields: { likedFrom: { $in: [login, req.user.likeList] } },
       },
       {
         $project: {
@@ -40,11 +40,6 @@ module.exports = async function(req) {
     }).save()
   }
   
-  if (req.params.login) {
-    user.likedTo = await mongo.models.Actions.checkIfUserLikeMe(req.user, user)
-    user.likedFrom = await mongo.models.Actions.checkIfILikeUser(req.user, user)
-  }
-  
   if (req.params.login) delete user.email
   else {
     delete user.likedFrom
@@ -54,41 +49,4 @@ module.exports = async function(req) {
 
   return { type: "ok", data: user }
 
-  //   if (req.user.login !== login) {
-  //     new mongo.models.Actions({
-  //       who: req.user._id,
-  //       action: 'visit',
-  //       target: user._id,
-  //     }).save((err, action) => {
-  //       if (err) callback(null, { type: "error", message: "Error occurred on the server" })
-  //       io.emit(user.login, {
-  //         action:         action.action,
-  //         created:        action.created, 
-  //         who: {
-  //           age:          req.user.age,
-  //           avatar:       req.user.avatar,
-  //           biography:    req.user.biography,
-  //           created:      req.user.created,
-  //           rating:  req.user.rating,
-  //           fname:        req.user.fname,
-  //           gender:       req.user.gender,
-  //           images:       req.user.images,
-  //           likeList:     req.user.likeList,
-  //           lname:        req.user.lname,
-  //           location:     req.user.location,
-  //           login:        req.user.login,
-  //           preference:   req.user.preference,
-  //           tags:         req.user.tags,
-  //         }
-  //       })
-  //       user = JSON.parse(JSON.stringify(user))
-  //       delete user._id
-  //       callback(null, { type: "ok", message: "", data: user })
-  //     })
-  //   } else {
-  //     user = JSON.parse(JSON.stringify(user))
-  //     delete user._id
-  //     callback(null, { type: "ok", message: "", data: user })
-  //   }
-  // }
 }

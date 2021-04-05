@@ -12,20 +12,10 @@ module.exports = function(io) {
     }
   })
 
-  const getLocation = function() {
-    return this.geoLoc ?
-      {
-        x: this.geoLoc.coordinates[0],
-        y: this.geoLoc.coordinates[1]
-      } : null
-  }
-
   let schema = new mongo.Schema({
     geoLoc: { // геолокация по которой ведутся расчеты дистанции, равна выбранной или реальной, если выбранная отсутствует
       type: pointSchema,
       index: '2dsphere',
-      // type: { type: String, enum: ["Point"] },
-      // coordinates: { type: [Number] },
     },
     realLocation: { // реальная геолокация пользователя, обновляется при логине
       type: Object,
@@ -89,20 +79,14 @@ module.exports = function(io) {
     isFilled: {
       type: Boolean,
     },
+    likeList: {
+      type: Array,
+      default: [],
+      required: true,
+    }
   })
 
-  // schema.index({ 'geoLoc': '2dsphere' });
-  // }, { toJSON: { getters: true } })
-  
-  schema.statics.getUsersForChat = async function(req, callback) {
-    const docs = await this.find({
-      login: { $in: req.user.likeList },
-    })
-      .select('-_id -salt -token -hashedPassword -__v -email -created')
-    let filteredDocs = docs
-      .filter((user) => user.likeList.includes(req.user.login))
-    callback(null, { type: "ok", message: "", data: filteredDocs })
-  }
+  schema.statics.getChatList = require('./get_chat_list')
 
   schema.statics.getUsers = require('./get_users')
   
