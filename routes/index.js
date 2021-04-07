@@ -32,19 +32,13 @@ module.exports = function(io) {
   }))
 
   router.use((req, res, next) => {
-
     if (!req.user) res.status(401).send()
     next()
   }),
   
-  router.post('/send-message', (req, res, next) => {
-    if (req.user) {
-      Actions.sendMessage(req, (err, params) => {
-        if (err) next(err)
-        else res.send(JSON.stringify(params))
-      })
-    } else next()
-  })
+  router.post('/send-message', errorHandleWrapper(async (req, res) => {
+    res.json(await Actions.sendMessage(req))
+  }))
   
   router.post('/get-messages', (req, res, next) => {
     if (req.user) {

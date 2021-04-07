@@ -27,57 +27,8 @@ module.exports = function(io) {
   })
 
   schema.statics.likeUser = require('./like_user')
-  
-  schema.statics.sendMessage = function(req, callback) {
-    const User = mongo.models.User
-    const Actions = mongo.models.Actions
-  
-    // a.waterfall([
-    //   (callback) => {
-    //     User.findOne({ login: req.body.target }, callback)
-    //       .select('-salt -token -hashedPassword -__v -created')
-    //   },
-    //   (user, callback) => {
-    //     if (!user) {
-    //       callback(null, { type: "error", message: "Невозможно выполнить операцию!" })
-    //     }
-    //     if (req.user.login !== user.login) {
-    //       new Actions({
-    //         target: user._id,
-    //         action: 'messages',
-    //         who: req.user._id,
-    //         message: req.body.message,
-    //       }).save((err, action) => {
-    //         if (err) callback(null, { type: "error", message: "Невозможно выполнить операцию!" })
-    //         const resp = {
-    //           action:         action.action,
-    //           created:        action.created,
-    //           message:        action.message,
-    //           who: {
-    //             age:                req.user.age,
-    //             avatar:             req.user.avatar,
-    //             biography:          req.user.biography,
-    //             // created:            req.user.created,
-    //             rating:        req.user.rating,
-    //             fname:              req.user.fname,
-    //             gender:             req.user.gender,
-    //             images:             req.user.images,
-    //             likeList:           req.user.likeList,
-    //             lname:              req.user.lname,
-    //             location:           req.user.location,
-    //             login:              req.user.login,
-    //             preference:         req.user.preference,
-    //             tags:               req.user.tags,
-    //             isFilled:  req.user.isFilled,
-    //           }
-    //         }
-    //         io.emit(user.login, resp)
-    //         callback(null, { type: "ok", message: "", data: resp })
-    //       })
-    //     }
-    //   },
-    // ], callback)
-  }
+
+  schema.statics.sendMessage = require('./send_message')
   
   schema.statics.getMessages = function(req, callback) {
     const User = mongo.models.User
