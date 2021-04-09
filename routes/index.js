@@ -40,14 +40,9 @@ module.exports = function(io) {
     res.json(await Actions.sendMessage(req))
   }))
   
-  router.post('/get-messages', (req, res, next) => {
-    if (req.user) {
-      Actions.getMessages(req, (err, params) => {
-        if (err) next(err)
-        else res.send(JSON.stringify(params))
-      })
-    } else next()
-  })
+  router.post('/get-messages', errorHandleWrapper(async (req, res) => {
+    res.json(await Actions.getMessages(req))
+  }))
   
   router.get('/chat-list', errorHandleWrapper(async (req, res) => {
     res.json(await User.getChatList(req))

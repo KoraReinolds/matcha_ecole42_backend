@@ -7,11 +7,13 @@ module.exports = async function(req) {
 
   const user = await Users.findOne({ login: req.body.target })
 
-  return { type: "ok", data: await new Actions({
+  await new Actions({
     who: req.user._id,
     action: 'messages',
     target: user._id,
     message: req.body.message,
-  }).save()}
+  }).save()
+
+  return { type: "ok" }
   
 }
