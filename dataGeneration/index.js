@@ -46,8 +46,8 @@ const generateUser = (n) => {
   const preference = randomArray(1, 2, preferencesArray)
   const biography = randomText(1, 5, sentences).slice(0, 2056)
   const images = [
-    { avatar: true, index: 0, src: `https://picsum.photos/id/${getRandomValue(0, 500)}/200/300` },
-    { avatar: false, index: 1, src: `https://picsum.photos/id/${getRandomValue(0, 500)}/200/300` },
+    { avatar: true, src: `https://picsum.photos/id/${getRandomValue(0, 500)}/200/300` },
+    { avatar: false, src: `https://picsum.photos/id/${getRandomValue(0, 500)}/200/300` },
   ]
   return {
     isFilled: true,

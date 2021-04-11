@@ -24,6 +24,14 @@ module.exports = function(io) {
       type: Date,
       default: Date.now,
     },
+    readed: {
+      type: Boolean,
+      default: false,
+    },
+    msg_readed: {
+      type: Boolean,
+      default: false,
+    },
   })
 
   schema.statics.likeUser = require('./like_user')
@@ -35,6 +43,8 @@ module.exports = function(io) {
   schema.statics.getNotifications = require('./notifications')
 
   schema.statics.getHistory = require('./history')
+
+  schema.statics.getUnreadedNotifications = require('./get_unreaded_notifications')
 
   return mongo.model('Actions', schema)
 }

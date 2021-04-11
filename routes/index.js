@@ -71,6 +71,10 @@ module.exports = function(io) {
   router.post('/logout', errorHandleWrapper(async (req, res) => {
     res.json(await User.logout(req))
   }))
+
+  router.post('/new-notifications', errorHandleWrapper(async (req, res) => {
+    res.json(await Actions.getUnreadedNotifications(req))
+  }))
   
   router.get('/profile-get', errorHandleWrapper(async (req, res) => {
     res.json(await User.getUserByName(req))
