@@ -24,9 +24,11 @@ module.exports = async function(req) {
 
   await new Actions({
     who: req.user._id,
-    action: +req.body.value ? 'like' : 'dislike',
     target: user._id,
+    action: +req.body.value ? 'like' : 'dislike',
   }).save()
+
+  Actions.emitLastAction(req, user)
   
   return { type: "ok" }
     

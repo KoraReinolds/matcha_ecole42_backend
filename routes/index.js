@@ -1,9 +1,8 @@
-
-module.exports = function(io) {
+// module.exports = function() {
   const express = require('express')
   const router = express.Router()
-  const User = require('../models/user')(io)
-  const Actions = require('../models/actions')(io)
+  const User = require('../models/user')
+  const Actions = require('../models/actions')
 
   const errorHandleWrapper = function(callback) {
     return function (req, res, next) {
@@ -91,5 +90,7 @@ module.exports = function(io) {
     })
   })
 
-  return router
-}
+  module.exports = router
+
+//   return router
+// }
