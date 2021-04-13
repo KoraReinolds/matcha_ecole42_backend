@@ -40,6 +40,10 @@ module.exports = async function(req) {
     }).save()
   }
   
+  if (req.user.login !== user.login) {
+    mongo.models.Actions.emitLastAction(req, user)
+  }
+
   if (req.params.login) delete user.email
   else {
     delete user.likedFrom
