@@ -14,6 +14,8 @@ module.exports = async function(req) {
     message: req.body.message,
   }).save()
 
+  Actions.emitLastAction(req, user)
+
   return { type: "ok" }
   
 }
