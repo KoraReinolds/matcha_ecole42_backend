@@ -8,6 +8,7 @@ try {
     let users = dataGenerator.generateUsers(100)
     const promises = users.map(user =>new mongo.models.User(user).save())
     await Promise.all(promises)
+
     mongo.disconnect()
   })
 } catch {

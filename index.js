@@ -3,7 +3,7 @@ const app = express()
 const server = require('http').createServer(app)
 const io = require('socket.io')(server, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: '*',
     credentials: true,
   }
 })
@@ -15,7 +15,7 @@ const port = process.env.PORT || 4000
 
 app.use(cors({
   credentials: true,
-  origin: 'http://localhost:3000',
+  origin: '*',
 }))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())

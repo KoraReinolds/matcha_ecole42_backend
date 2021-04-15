@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node ./db/createDB.js; node ./index.js;",
     "server": "node ./db/createDB.js; node ./index.js;",
     "dev": "supervisor ./index.js;",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
-    "node": "8.4.0"
+    "node": "14.x"
   },
   "dependencies": {
     "cors": "^2.8.5",
